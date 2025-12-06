@@ -1,6 +1,6 @@
 // Управление слайдами
 let currentSlide = 1;
-const totalSlides = 8;
+const totalSlides = 9;
 
 // Инициализация
 document.addEventListener('DOMContentLoaded', function () {
