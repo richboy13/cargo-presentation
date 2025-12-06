@@ -33,6 +33,35 @@ document.addEventListener('DOMContentLoaded', function () {
             changeSlide(-1); // Swipe right - prev
         }
     }
+
+    // ===== Инициализация модальных окон =====
+    // Обработчики кликов на кликабельные элементы
+    document.addEventListener('click', function (e) {
+        const clickableElement = e.target.closest('.clickable');
+        if (clickableElement && clickableElement.dataset.modal) {
+            e.preventDefault();
+            e.stopPropagation();
+            openModal(clickableElement.dataset.modal);
+        }
+    });
+
+    // Закрытие по клику на крестик
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('modal-close')) {
+            const modal = e.target.closest('.modal');
+            if (modal) {
+                closeModal(modal.id);
+            }
+        }
+    });
+
+    // Закрытие по клику вне модального окна
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('modal')) {
+            closeModal(e.target.id);
+        }
+    });
+
 });
 
 // Инициализация слайдов
@@ -129,6 +158,15 @@ function updateNavigation() {
 
 // Обработка клавиатуры
 function handleKeyPress(e) {
+    // Если открыто модальное окно, обрабатываем только Escape
+    const activeModal = document.querySelector('.modal.active');
+    if (activeModal) {
+        if (e.key === 'Escape') {
+            closeAllModals();
+        }
+        return;
+    }
+
     switch (e.key) {
         case 'ArrowLeft':
             changeSlide(-1);
@@ -147,6 +185,9 @@ function handleKeyPress(e) {
         case ' ':
             e.preventDefault();
             changeSlide(1);
+            break;
+        case 'Escape':
+            closeAllModals();
             break;
     }
 }
@@ -174,3 +215,33 @@ window.addEventListener('resize', function () {
     // Пересчитываем позиции при изменении размера
     updateProgress();
 });
+
+// ===== МОДАЛЬНЫЕ ОКНА =====
+
+// Открытие модального окна
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+// Закрытие модального окна
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+// Закрытие всех модальных окон
+function closeAllModals() {
+    const modals = document.querySelectorAll('.modal.active');
+    modals.forEach(modal => {
+        modal.classList.remove('active');
+    });
+    document.body.style.overflow = '';
+}
+
